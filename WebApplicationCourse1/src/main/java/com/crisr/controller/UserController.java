@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.crisr.dto.UserDTO;
+import com.crisr.exceptions.UserServiceException;
 import com.crisr.model.request.UserDetailModel;
+import com.crisr.model.response.ErrorMessages;
 import com.crisr.model.response.UserRest;
 import com.crisr.service.UserService;
 
@@ -35,9 +37,13 @@ public class UserController {
 	}
 
 	@PostMapping
-	public UserRest createUser(@RequestBody UserDetailModel userDetail) {
+	public UserRest createUser(@RequestBody UserDetailModel userDetail) throws Exception {
 		
 		UserRest returnValue = new UserRest();
+		
+		if (userDetail.getFirstName().isEmpty() 
+				|| userDetail.getEmail().isEmpty() 
+				|| userDetail.getLastName().isEmpty()) throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
 		
 		UserDTO userDTO = new UserDTO();
 		BeanUtils.copyProperties(userDetail, userDTO);
