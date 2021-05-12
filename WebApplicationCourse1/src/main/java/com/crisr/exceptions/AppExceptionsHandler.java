@@ -22,4 +22,10 @@ public class AppExceptionsHandler {
 		return new ResponseEntity<>(errorMessage, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
+	@ExceptionHandler(value = { Exception.class })
+	public ResponseEntity<Object> handleOtherExceptions(Exception ex, WebRequest request) {
+		
+		return new ResponseEntity<>(ex.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
 }
