@@ -1,5 +1,8 @@
 package com.crisr.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.crisr.dto.UserDTO;
@@ -77,5 +81,23 @@ public class UserController {
 		
 		return "The user with id " + userId + " was deleted successful";
 	}
+	
+	@GetMapping
+	public List<UserRest> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
+			@RequestParam(value = "limit", defaultValue = "25") int limit){
+		
+		List<UserRest> returnValue = new ArrayList<>();
+		
+		List<UserDTO> users = userService.getUsers(page, limit);
+		
+		for (UserDTO userDTO : users) {
+			UserRest userModel = new UserRest();
+			BeanUtils.copyProperties(userDTO, userModel);
+			returnValue.add(userModel);
+		}
+		
+		return returnValue;
+	}
+	
 
 }
