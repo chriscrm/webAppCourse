@@ -39,11 +39,15 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
 		try {
 
+			//json payload request model for our username and pass
 			UserLoginRequestModel creds = new ObjectMapper().readValue(request.getInputStream(),
 					UserLoginRequestModel.class);
 
 			return authenticationManager.authenticate(
-					new UsernamePasswordAuthenticationToken(creds.getEmail(), creds.getPassword(), new ArrayList<>()));
+					new UsernamePasswordAuthenticationToken(
+							creds.getEmail(), 
+							creds.getPassword(), 
+							new ArrayList<>()));
 
 		} catch (IOException ioe) {
 			throw new RuntimeException(ioe);
@@ -52,18 +56,23 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 	}
 
 	@Override
-	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
-			Authentication authResult) throws IOException, ServletException {
+	protected void successfulAuthentication(HttpServletRequest request, 
+											HttpServletResponse response, 
+											FilterChain chain,
+											Authentication authResult) throws IOException, ServletException {
 
 		String userName = ((User) authResult.getPrincipal()).getUsername();
 
-		String token = Jwts.builder().setSubject(userName)
+		String token = Jwts.builder()
+				.setSubject(userName)
 				.setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
-				.signWith(SignatureAlgorithm.HS512, SecurityConstants.getTokenSecret()).compact();
+				.signWith(SignatureAlgorithm.HS512, SecurityConstants.getTokenSecret())
+				.compact();
 		
-		UserService userService = (UserService) SpringApplicationContext.getBean("userServiceImpl");
+		UserService userService = (UserService) SpringApplicationContext.getBean("userServiceImpl"); //lowerCase of nameClass
 		UserDTO userDTO = userService.getUser(userName);
 
+		//client receives this responses
 		response.addHeader(SecurityConstants.HEADER_STRING, SecurityConstants.TOKEN_PREFIX + token);
 		response.addHeader("UserID", userDTO.getUserId());
 

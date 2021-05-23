@@ -17,6 +17,11 @@ public class CustomUtils {
 		return generateRandomString(length);
 	}
 
+	/**
+	 * Generate a random string for a given length
+	 * @param length
+	 * @return a random string or characters
+	 */
 	private String generateRandomString(int length) {
 
 		StringBuilder returnValue = new StringBuilder(length);

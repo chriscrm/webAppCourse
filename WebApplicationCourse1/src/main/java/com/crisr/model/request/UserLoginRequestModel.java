@@ -1,5 +1,6 @@
 package com.crisr.model.request;
 
+//request model for login, email and password
 public class UserLoginRequestModel {
 
 	private String email;

@@ -1,4 +1,4 @@
-package com.crisr;
+package com.crisr.repository;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;

@@ -15,11 +15,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.crisr.CustomUtils;
-import com.crisr.UserRepository;
 import com.crisr.dto.UserDTO;
 import com.crisr.entity.UserEntity;
 import com.crisr.exceptions.UserServiceException;
 import com.crisr.model.response.ErrorMessages;
+import com.crisr.repository.UserRepository;
 import com.crisr.service.UserService;
 
 @Service
@@ -37,13 +37,14 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserDTO createUser(UserDTO user) {
 
+		//validating if user email exists in the DB
 		if (userRepository.findByEmail(user.getEmail()) != null)
 			throw new RuntimeException("User Email already exists");
 
 		UserEntity userEntity = new UserEntity();
 		BeanUtils.copyProperties(user, userEntity);
 
-		// hardcoded temp
+		// Generating a random public userId and password encryption
 		String publicUserId = customUtils.generateUserId(10);
 		userEntity.setUserId(publicUserId);
 		userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(user.getPassword()));
@@ -56,6 +57,11 @@ public class UserServiceImpl implements UserService {
 		return returnValue;
 	}
 
+	/**
+	 * @param user email.
+	 * @throws UsernameNotFoundException if a <code>null</code> value is returned by
+	 * findByEmail parameter when the email's not founds
+	 */
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
