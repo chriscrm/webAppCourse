@@ -3,6 +3,7 @@ package com.crisr.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.crisr.CustomUtils;
+import com.crisr.dto.AddressDTO;
 import com.crisr.dto.UserDTO;
 import com.crisr.entity.UserEntity;
 import com.crisr.exceptions.UserServiceException;
@@ -40,20 +42,34 @@ public class UserServiceImpl implements UserService {
 		//validating if user email exists in the DB
 		if (userRepository.findByEmail(user.getEmail()) != null)
 			throw new RuntimeException("User Email already exists");
+		
+		//setting public addressId for each address received
+		for (int i = 0; i < user.getAddresses().size(); i++) {
+			AddressDTO address = user.getAddresses().get(i);
+			address.setUserDetails(user);
+			address.setAddressId(customUtils.generateAddressId(10));
+			user.getAddresses().set(i, address);
+		}
+			
 
-		UserEntity userEntity = new UserEntity();
-		BeanUtils.copyProperties(user, userEntity);
-
+		//UserEntity userEntity = new UserEntity();
+		//BeanUtils.copyProperties(user, userEntity);
+		ModelMapper modelMapper = new ModelMapper();
+		UserEntity userEntity = modelMapper.map(user, UserEntity.class);
+		
+		
 		// Generating a random public userId and password encryption
-		String publicUserId = customUtils.generateUserId(10);
+		String publicUserId = customUtils.generateUserId(15);
 		userEntity.setUserId(publicUserId);
 		userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
-		UserDTO returnValue = new UserDTO();
+		//UserDTO returnValue = new UserDTO();
 
 		UserEntity storedUserDetail = userRepository.save(userEntity);
-		BeanUtils.copyProperties(storedUserDetail, returnValue);
-
+		//BeanUtils.copyProperties(storedUserDetail, returnValue);
+		UserDTO returnValue = modelMapper.map(storedUserDetail, UserDTO.class);
+		
+		
 		return returnValue;
 	}
 

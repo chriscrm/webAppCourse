@@ -3,6 +3,7 @@ package com.crisr.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -51,12 +52,17 @@ public class UserController {
 				|| userDetail.getEmail().isEmpty() 
 				|| userDetail.getLastName().isEmpty()) throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
 		
-		UserDTO userDTO = new UserDTO();
-		BeanUtils.copyProperties(userDetail, userDTO);
+		//for embedded object into an object use modelmapper dependency
+		//UserDTO userDTO = new UserDTO();
+		//BeanUtils.copyProperties(userDetail, userDTO);
+		
+		//ModelMapper dependency for map/copy properties
+		ModelMapper modelMapper = new ModelMapper();
+		UserDTO userDTO = modelMapper.map(userDetail, UserDTO.class);
 		
 		UserDTO createdUser = userService.createUser(userDTO);
-		BeanUtils.copyProperties(createdUser, returnValue);
-		
+		//BeanUtils.copyProperties(createdUser, returnValue);
+		returnValue = modelMapper.map(createdUser, UserRest.class);
 		
 		return returnValue;
 	}

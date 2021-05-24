@@ -16,6 +16,10 @@ public class CustomUtils {
 	public String generateUserId(int length) {
 		return generateRandomString(length);
 	}
+	
+	public String generateAddressId(int length) {
+		return generateRandomString(length);
+	}
 
 	/**
 	 * Generate a random string for a given length
