@@ -29,6 +29,7 @@ public class UserController {
 	@Autowired
 	UserService userService;
 
+	//@GetMapping(path = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 	@GetMapping(path = "/{id}")
 	public UserRest getUser(@PathVariable String id) {
 		
@@ -40,6 +41,7 @@ public class UserController {
 		return returnValue;
 	}
 
+	//@PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 	@PostMapping
 	public UserRest createUser(@RequestBody UserDetailModel userDetail) throws Exception {
 		
@@ -82,6 +84,7 @@ public class UserController {
 		return "The user with id " + userId + " was deleted successful";
 	}
 	
+	//request query string params
 	@GetMapping
 	public List<UserRest> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "limit", defaultValue = "25") int limit){

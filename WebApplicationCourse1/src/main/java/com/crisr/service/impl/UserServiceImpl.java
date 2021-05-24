@@ -110,6 +110,7 @@ public class UserServiceImpl implements UserService {
 		if (userEntity == null)
 			throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
 
+		//only fields that wants to update
 		userEntity.setFirstName(userDTO.getFirstName());
 		userEntity.setLastName(userDTO.getLastName());
 

@@ -17,15 +17,17 @@ public class AppExceptionsHandler {
 	@ExceptionHandler(value = { UserServiceException.class })
 	public ResponseEntity<Object> handleUserServiceException(UserServiceException ex, WebRequest request) {
 		
+		//Custom error message for print timestamp
 		CustomErrorMessage errorMessage = new CustomErrorMessage(new Date(), ex.getMessage());
 		
 		return new ResponseEntity<>(errorMessage, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
+	//handler all other generic exceptions 
 	@ExceptionHandler(value = { Exception.class })
 	public ResponseEntity<Object> handleOtherExceptions(Exception ex, WebRequest request) {
-		
-		return new ResponseEntity<>(ex.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+		CustomErrorMessage errorMessage = new CustomErrorMessage(new Date(), ex.getMessage());
+		return new ResponseEntity<>(errorMessage, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 }

@@ -2,13 +2,17 @@ package com.crisr.model.response;
 
 import java.util.Date;
 
+/**
+ * CustomErrorMessage
+ * @author crisr
+ *
+ */
 public class CustomErrorMessage {
 
 	private Date timeStamp;
 	private String message;
 
-	public CustomErrorMessage() {
-	}
+	public CustomErrorMessage() {}
 
 	public CustomErrorMessage(Date timeStamp, String message) {
 		this.timeStamp = timeStamp;
