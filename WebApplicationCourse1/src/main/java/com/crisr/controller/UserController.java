@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,11 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.crisr.dto.AddressDTO;
 import com.crisr.dto.UserDTO;
 import com.crisr.exceptions.UserServiceException;
 import com.crisr.model.request.UserDetailModel;
+import com.crisr.model.response.AddressesRest;
 import com.crisr.model.response.ErrorMessages;
 import com.crisr.model.response.UserRest;
+import com.crisr.service.AddressService;
 import com.crisr.service.UserService;
 
 @RestController
@@ -29,6 +33,9 @@ public class UserController {
 	
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	AddressService addressService;
 
 	//@GetMapping(path = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 	@GetMapping(path = "/{id}")
@@ -108,5 +115,21 @@ public class UserController {
 		return returnValue;
 	}
 	
+	
+	@GetMapping(path = "/{userId}/addresses")
+	public List<AddressesRest> getUserAddresses(@PathVariable String userId){
+		
+		List<AddressesRest> returnValue = new ArrayList<>();
+		
+		List<AddressDTO> addressesDTO = addressService.getAddresses(userId);
+		
+		if(addressesDTO != null && !addressesDTO.isEmpty()) {
+			java.lang.reflect.Type listType = new TypeToken<List<AddressesRest>>() {}.getType();	
+			returnValue = new ModelMapper().map(addressesDTO, listType);
+		}
+		
+		return returnValue;
+		
+	}
 
 }
