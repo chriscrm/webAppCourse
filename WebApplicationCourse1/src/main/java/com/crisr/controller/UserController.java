@@ -150,11 +150,16 @@ public class UserController {
 		//creating user link HATEOAS
 		Link userLink = WebMvcLinkBuilder.linkTo(UserController.class).slash(userId).withRel("user");
 		
-		//creating address link
-		Link userAddressesLink = WebMvcLinkBuilder.linkTo(UserController.class)
-				.slash(userId)
-				.slash("addresses")
-				.withRel("addresses");
+		//creating address link (hardcoded addresses)
+		/*
+		 * Link userAddressesLink = WebMvcLinkBuilder.linkTo(UserController.class)
+		 * .slash(userId) 
+		 * .slash("addresses") 
+		 * .withRel("addresses");
+		 */
+		
+		//dynamic addressesLink (same above)
+		Link userAddressesLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getUserAddresses(userId)).withRel("addresses");
 		
 		//creating self link
 		Link selfLink = WebMvcLinkBuilder.linkTo(UserController.class)
