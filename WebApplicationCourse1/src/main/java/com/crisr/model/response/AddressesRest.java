@@ -1,6 +1,9 @@
 package com.crisr.model.response;
 
-public class AddressesRest {
+import org.springframework.hateoas.RepresentationModel;
+
+//Adding RepresentationModel HATEOS
+public class AddressesRest extends RepresentationModel<AddressesRest>{
 	
 	private String addressId;
 	private String city;

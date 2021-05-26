@@ -1,12 +1,17 @@
 package com.crisr.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -133,13 +138,46 @@ public class UserController {
 	}
 	
 	@GetMapping(path = "/{userId}/addresses/{addressId}")
-	public AddressesRest getUserAddress(@PathVariable String addressId) {
+	public AddressesRest getUserAddress(@PathVariable String userId, 
+			@PathVariable String addressId) {
 		
 		AddressDTO addressDTO = addressService.getAddress(addressId);
 		
 		ModelMapper modelMapper = new ModelMapper();
+		AddressesRest returnValue = modelMapper.map(addressDTO, AddressesRest.class);
 		
-		return modelMapper.map(addressDTO, AddressesRest.class);
+		// http://localhost:8080/users/<userId>/addresses
+		//creating user link HATEOAS
+		Link userLink = WebMvcLinkBuilder.linkTo(UserController.class).slash(userId).withRel("user");
+		
+		//creating address link
+		Link userAddressesLink = WebMvcLinkBuilder.linkTo(UserController.class)
+				.slash(userId)
+				.slash("addresses")
+				.withRel("addresses");
+		
+		//creating self link
+		Link selfLink = WebMvcLinkBuilder.linkTo(UserController.class)
+				.slash(userId)
+				.slash("addresses")
+				.slash(addressId)
+				.withSelfRel();
+		
+		//return modelMapper.map(addressDTO, AddressesRest.class);
+		
+		//add a Link to our AddressRest extended to RepresentationModel
+		returnValue.add(userLink);
+		returnValue.add(userAddressesLink);
+		returnValue.add(selfLink);
+		
+		//alternative use EntityModel
+		//
+		//EntityModel.of(returnValue, Arrays.asList(userLink, userAddressesLink, selfLink));
+		//change return type public EntityModel<AddressesRest>
+		//remove extends RepresentationModel<AddressesRest>
+		//return EntityModel.of(returnValue, Arrays.asList(userLink, userAddressesLink, selfLink));
+		
+		return returnValue;
 	}
 
 }
