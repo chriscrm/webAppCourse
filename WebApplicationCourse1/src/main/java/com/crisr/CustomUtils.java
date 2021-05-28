@@ -1,9 +1,16 @@
 package com.crisr;
 
 import java.security.SecureRandom;
+import java.util.Date;
 import java.util.Random;
 
 import org.springframework.stereotype.Component;
+
+import com.crisr.security.SecurityConstants;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
 public class CustomUtils {
@@ -35,6 +42,36 @@ public class CustomUtils {
 		}
 
 		return new String(returnValue);
+	}
+
+	/*
+	 * decrypt token, and get content, then get expiration date
+	 * compare two dates 
+	 */
+	public static boolean hasTokenExpired(String token) {
+		
+		Claims claims = Jwts.parser()
+				.setSigningKey(SecurityConstants.getTokenSecret())
+				.parseClaimsJws(token).getBody();
+		
+		Date tokenExpirationDate = claims.getExpiration();
+		Date todayDate = new Date();
+		
+		return tokenExpirationDate.before(todayDate);
+	}
+
+	/*
+	 * Generating token using publicUserId, setting expiration time and secret token phrase
+	 */
+	public static String generateEmailVerificationToken(String publicUserId) {
+		
+		String token = Jwts.builder()
+				.setSubject(publicUserId)
+				.setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.EXPIRATION_TIME))
+				.signWith(SignatureAlgorithm.HS512, SecurityConstants.getTokenSecret())
+				.compact();
+		
+		return token;
 	}
 
 }

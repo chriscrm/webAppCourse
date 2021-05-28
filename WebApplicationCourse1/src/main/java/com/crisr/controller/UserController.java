@@ -26,9 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.crisr.dto.AddressDTO;
 import com.crisr.dto.UserDTO;
 import com.crisr.exceptions.UserServiceException;
+import com.crisr.model.request.RequestOperationName;
+import com.crisr.model.request.RequestOperationStatus;
 import com.crisr.model.request.UserDetailModel;
 import com.crisr.model.response.AddressesRest;
 import com.crisr.model.response.ErrorMessages;
+import com.crisr.model.response.OperationStatusModel;
 import com.crisr.model.response.UserRest;
 import com.crisr.service.AddressService;
 import com.crisr.service.UserService;
@@ -216,4 +219,26 @@ public class UserController {
 		return returnValue;
 	}
 
+	/*
+	 * http://localhost:8080/webapp/users/email-verification?token=sdfsdf
+	 */
+	@GetMapping(path = "/email-verification")
+	public OperationStatusModel verifyEmailToken(@RequestParam(value = "token") String token) {
+		
+		OperationStatusModel returnValue = new OperationStatusModel();
+		
+		returnValue.setOperationName(RequestOperationName.VERIFY_EMAIL.name());
+		
+		boolean isVerified = userService.verifyEmailToken(token);
+		
+		if (isVerified) {
+			returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+		} else {
+			returnValue.setOperationResult(RequestOperationStatus.ERROR.name());
+		}
+		
+		return returnValue;
+	}
+	
+	
 }
