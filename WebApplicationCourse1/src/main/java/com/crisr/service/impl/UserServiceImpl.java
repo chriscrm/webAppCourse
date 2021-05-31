@@ -73,6 +73,11 @@ public class UserServiceImpl implements UserService {
 		//BeanUtils.copyProperties(storedUserDetail, returnValue);
 		UserDTO returnValue = modelMapper.map(storedUserDetail, UserDTO.class);
 		
+		/*
+		 * Here Send and email message to user to verify their email address
+		 * for example using AmazonSES
+		 * new AmazonSES().verifyEmail(returnValue);
+		 */
 		
 		return returnValue;
 	}
