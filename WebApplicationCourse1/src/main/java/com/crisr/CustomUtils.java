@@ -74,4 +74,19 @@ public class CustomUtils {
 		return token;
 	}
 
+	
+	/*
+	 * Generating reset token using public userId, valid time token 1 hour
+	 */
+	public static String generatePasswordResetToken(String userId) {
+		
+		String token = Jwts.builder()
+				.setSubject(userId)
+				.setExpiration(new Date(System.currentTimeMillis() + SecurityConstants.RESET_EXPIRATION_TIME))
+				.signWith(SignatureAlgorithm.HS512, SecurityConstants.getTokenSecret())
+				.compact();
+		
+		return token;
+	}
+
 }

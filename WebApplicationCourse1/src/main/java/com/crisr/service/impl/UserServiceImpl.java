@@ -18,9 +18,11 @@ import org.springframework.stereotype.Service;
 import com.crisr.CustomUtils;
 import com.crisr.dto.AddressDTO;
 import com.crisr.dto.UserDTO;
+import com.crisr.entity.PasswordResetTokenEntity;
 import com.crisr.entity.UserEntity;
 import com.crisr.exceptions.UserServiceException;
 import com.crisr.model.response.ErrorMessages;
+import com.crisr.repository.PasswordResetTokenRepository;
 import com.crisr.repository.UserRepository;
 import com.crisr.service.UserService;
 
@@ -35,6 +37,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	BCryptPasswordEncoder bCryptPasswordEncoder;
+	
+	@Autowired
+	PasswordResetTokenRepository passwordResetTokenRepository;
 
 	@Override
 	public UserDTO createUser(UserDTO user) {
@@ -210,6 +215,37 @@ public class UserServiceImpl implements UserService {
 			
 		}
 		
+		
+		return returnValue;
+	}
+
+	@Override
+	public boolean requestPasswordReset(String email) {
+		
+		boolean returnValue = false;
+
+		UserEntity userEntity = userRepository.findByEmail(email);
+		
+		if (userEntity == null) {
+			return returnValue;
+		}
+		
+		//Generate new reset roken
+		String token = CustomUtils.generatePasswordResetToken(userEntity.getUserId());
+		
+		//New Entity PasswordResetTokenEntity
+		PasswordResetTokenEntity passwordEntity = new PasswordResetTokenEntity();
+		
+		passwordEntity.setToken(token);
+		passwordEntity.setUserDetails(userEntity);
+		
+		passwordResetTokenRepository.save(passwordEntity);
+		
+		//send email token verification for example:
+		/*
+		 * returnValue = new AmazonSES().sendPasswordResetRequest(
+		 * userEntity.getFirstName(), userEntity.getEmail(), token);
+		 */
 		
 		return returnValue;
 	}

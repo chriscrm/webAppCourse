@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.crisr.dto.AddressDTO;
 import com.crisr.dto.UserDTO;
 import com.crisr.exceptions.UserServiceException;
+import com.crisr.model.request.PasswordResetModel;
 import com.crisr.model.request.RequestOperationName;
 import com.crisr.model.request.RequestOperationStatus;
 import com.crisr.model.request.UserDetailModel;
@@ -240,5 +241,33 @@ public class UserController {
 		return returnValue;
 	}
 	
+
+	/*
+	 * password reset request
+	 */
+	
+	@PostMapping(path = "/password-reset")
+	public OperationStatusModel requestReset(@RequestBody PasswordResetModel passwordResetModel) {
+		
+		OperationStatusModel returnValue = new OperationStatusModel();
+		
+		boolean operationResult = userService.requestPasswordReset(passwordResetModel.getEmail());
+		
+		returnValue.setOperationName(RequestOperationName.REQUEST_PASSWORD_RESET.name());
+		returnValue.setOperationResult(RequestOperationStatus.ERROR.name());
+		
+		if (operationResult) {
+			returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+		}
+		
+		
+		return returnValue;
+	}
 	
 }
+
+
+
+
+
+
